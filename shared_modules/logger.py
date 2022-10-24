@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging as stdlib_logging
 import os
 from contextvars import ContextVar
