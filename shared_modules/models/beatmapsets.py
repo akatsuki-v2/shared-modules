@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Any
 
-from models import BaseModel
-from models import RankedStatus
-from models import Status
+from . import BaseModel
+from . import RankedStatus
+from . import Status
 
 
 class Beatmapset(BaseModel):

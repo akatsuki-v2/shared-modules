@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Literal
 
-from shared_modules.models import BaseModel
-from shared_modules.models import Status
+from . import BaseModel
+from . import Status
 
 
 class Score(BaseModel):

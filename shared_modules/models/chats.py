@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from models import BaseModel
-from models import Status
+from . import BaseModel
+from . import Status
 
 
 class Chat(BaseModel):
