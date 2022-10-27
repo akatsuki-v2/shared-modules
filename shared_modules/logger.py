@@ -1,6 +1,8 @@
 import logging as stdlib_logging
 import os
+import sys
 from contextvars import ContextVar
+from types import TracebackType
 from typing import Any
 
 import structlog
@@ -91,3 +93,26 @@ def error(*args, **kwargs) -> None:
 
 def critical(*args, **kwargs) -> None:
     return get_logger().critical(*args, **kwargs)
+
+
+# control the exception traceback message format
+
+def overwrite_exception_hook() -> None:
+    def exception_hook(
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType,
+    ) -> None:
+        get_logger().error("Uncaught exception",
+                           exc_type=exc_type,
+                           exc_value=exc_value,
+                           exc_traceback=exc_traceback)
+
+    global _default_excepthook
+    _default_excepthook = sys.excepthook
+
+    sys.excepthook = exception_hook
+
+
+def restore_exception_hook() -> None:
+    sys.excepthook = _default_excepthook
