@@ -9,7 +9,7 @@ import structlog
 from structlog.types import EventDict
 from structlog.types import WrappedLogger
 
-_ROOT_LOGGER = stdlib_logging.getLogger("service-root")
+_ROOT_LOGGER = stdlib_logging.getLogger()
 
 _REQUEST_ID_CONTEXT = ContextVar("request_id")
 
@@ -63,16 +63,16 @@ def configure_logging(app_env: str, log_level: str | int) -> None:
     handler.setFormatter(formatter)
     handler.setLevel(log_level)
 
-    # brute force control of the message format & level
-    # TODO: loggers can be created after this. how should we handle that?
-    existing_loggers = [
-        stdlib_logging.getLogger(name)
-        for name in stdlib_logging.root.manager.loggerDict
-    ]
-    for logger in existing_loggers:
-        logger.handlers = []
-        logger.addHandler(handler)
+    _ROOT_LOGGER.addHandler(handler)
+
+    for name in stdlib_logging.root.manager.loggerDict:
+        logger = stdlib_logging.getLogger(name)
+
+        # defer logging control to the root logger
+        logger.propagate = True
         logger.setLevel(log_level)
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
 
 
 def debug(*args, **kwargs) -> None:
